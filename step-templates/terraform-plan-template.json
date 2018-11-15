@@ -1,0 +1,118 @@
+{
+  "Id": "a3c63514-71d0-4fe8-89eb-0688da493674",
+  "Name": "Terraform - Plan Template (Linux)",
+  "Description": "Plan a terraform template from a package. This step is only compatible with linux ssh targets/workers.",
+  "ActionType": "Octopus.Script",
+  "Version": 49,
+  "CommunityActionTemplateId": null,
+  "Packages": [
+    {
+      "Id": "d8f36836-613f-465a-a77a-b72804414c05",
+      "Name": "Template",
+      "PackageId": "#{package_name}",
+      "FeedId": "#{feed_name}",
+      "AcquisitionLocation": "Server",
+      "Properties": {
+        "Extract": "True"
+      }
+    }
+  ],
+  "Properties": {
+    "Octopus.Action.Script.ScriptSource": "Inline",
+    "Octopus.Action.Script.Syntax": "Bash",
+    "Octopus.Action.Script.ScriptBody": "#!/bin/bash\nset -e\nset -o pipefail\n\nSSH_PRIVATE_KEY=\"$(get_octopusvariable \"tfplan_ssh_private_key\")\"\nSETUP_SCRIPT=\"$(get_octopusvariable \"tfplan_setup_script\")\"\nTERRAFORM_VERSION=\"$(get_octopusvariable \"tfplan_terraform_version\")\"\nTERRAFORM_DIR=\"$(get_octopusvariable \"tfplan_template_directory\")\"\nREPO_DIR=\"$(get_octopusvariable \"Octopus.Action.Package[Template].ExtractedPath\")\"\n\nif [ ! -z \"$SSH_PRIVATE_KEY\" ]\nthen\n\teval $(ssh-agent -s)\n  ssh-add - <<< \"${SSH_PRIVATE_KEY}\" 2>&1\n  ssh-keyscan github.com >> ~/.ssh/known_hosts 2>&1\n  echo \"SSH Key added to ssh-agent and github added as a known host\"\nfi\n\nwget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip 2>&1\nunzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip 2>&1\n\nTERRAFORM_BIN=\"$(pwd)/terraform\"\nchmod +x $TERRAFORM_BIN\n\ncd ${REPO_DIR}/${TERRAFORM_DIR}\n\nif [ ! -z \"$SETUP_SCRIPT\" ]\nthen\n\tchmod +x $SETUP_SCRIPT\n  $SETUP_SCRIPT 2>&1\nfi\n\n$TERRAFORM_BIN init -no-color $(get_octopusvariable \"tfplan_init_params\")\n\n$TERRAFORM_BIN plan -no-color -var-file=variables.tfvars $(get_octopusvariable \"tfplan_plan_params\")\n",
+    "Octopus.Action.SubstituteInFiles.Enabled": "True",
+    "Octopus.Action.EnabledFeatures": "Octopus.Features.SubstituteInFiles",
+    "Octopus.Action.SubstituteInFiles.TargetFiles": "**/*.tf\n**/*.tfvars\n**/*.tf.json\n**/*.tfvars.json"
+  },
+  "Parameters": [
+    {
+      "Id": "8e7dfce6-1fd5-408c-a4d6-815065748a36",
+      "Name": "feed_name",
+      "Label": "Package feed name",
+      "HelpText": "Name of the feed to be used for the package containing the terraform template. This will be the name of the feed prefixed with `feeds-`",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "60973ab1-69f8-4c04-8c74-cf70b5f1cfb4",
+      "Name": "package_name",
+      "Label": "Package Name",
+      "HelpText": "The name of the package to use from the feed above",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "5b35ebb3-7366-409e-b21c-a0993989f132",
+      "Name": "terraform_version",
+      "Label": "Terraform version",
+      "HelpText": "Version of Terraform to be downloaded and used as part of this step",
+      "DefaultValue": "0.11.10",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "15101f68-43ea-4dbd-96fb-981786a6a576",
+      "Name": "terraform_directory",
+      "Label": "Terraform template directory",
+      "HelpText": "Directory within the package where the terraform template is located",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "0b921cd8-2036-4328-9705-99835561eaca",
+      "Name": "terraform_init_params",
+      "Label": "Custom terraform init parameters",
+      "HelpText": "An optional list of additional parameters to pass to the terraform init command.\n",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "873d2db1-5654-42b5-bcba-8fcef6d51a24",
+      "Name": "terraform_plan_params",
+      "Label": "Custom terraform plan parameters",
+      "HelpText": "An optional list of additional parameters to pass to the terraform plan command.\n",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    },
+    {
+      "Id": "3f80f637-370d-49ff-994a-3db4842a0af4",
+      "Name": "ssh_private_key",
+      "Label": "Git SSH Key",
+      "HelpText": "SSH Key used for cloning private Git hosted terraform modules",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "Sensitive"
+      }
+    },
+    {
+      "Id": "6b7abf13-ffdc-4a35-8d50-7f4abd2d9d81",
+      "Name": "setup_script",
+      "Label": "Setup script",
+      "HelpText": "Script to be run before terraform to download any custom providers or do any other setup that is required before running `terraform init`. This script must be in the package and this path is relative to terraform folder provided above.",
+      "DefaultValue": "",
+      "DisplaySettings": {
+        "Octopus.ControlType": "SingleLineText"
+      }
+    }
+  ],
+  "LastModifiedOn": "2018-11-15T17:15:50.915Z",
+  "LastModifiedBy": "scottguymer",
+  "Category": "terraform",
+  "$Meta": {
+    "ExportedAt": "2018-11-15T17:15:50.915Z",
+    "OctopusVersion": "2018.9.6",
+    "Type": "ActionTemplate"
+  }
+}
