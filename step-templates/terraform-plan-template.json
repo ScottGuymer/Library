@@ -28,7 +28,7 @@
   "Parameters": [
     {
       "Id": "8e7dfce6-1fd5-408c-a4d6-815065748a36",
-      "Name": "feed_name",
+      "Name": "tfplan_feed_name",
       "Label": "Package feed name",
       "HelpText": "Name of the feed to be used for the package containing the terraform template. This will be the name of the feed prefixed with `feeds-`",
       "DefaultValue": "",
@@ -38,7 +38,7 @@
     },
     {
       "Id": "60973ab1-69f8-4c04-8c74-cf70b5f1cfb4",
-      "Name": "package_name",
+      "Name": "tfplan_package_name",
       "Label": "Package Name",
       "HelpText": "The name of the package to use from the feed above",
       "DefaultValue": "",
@@ -48,7 +48,7 @@
     },
     {
       "Id": "5b35ebb3-7366-409e-b21c-a0993989f132",
-      "Name": "terraform_version",
+      "Name": "tfplan_terraform_version",
       "Label": "Terraform version",
       "HelpText": "Version of Terraform to be downloaded and used as part of this step",
       "DefaultValue": "0.11.10",
@@ -58,7 +58,7 @@
     },
     {
       "Id": "15101f68-43ea-4dbd-96fb-981786a6a576",
-      "Name": "terraform_directory",
+      "Name": "tfplan_template_directory",
       "Label": "Terraform template directory",
       "HelpText": "Directory within the package where the terraform template is located",
       "DefaultValue": "",
@@ -68,7 +68,7 @@
     },
     {
       "Id": "0b921cd8-2036-4328-9705-99835561eaca",
-      "Name": "terraform_init_params",
+      "Name": "tfplan_init_params",
       "Label": "Custom terraform init parameters",
       "HelpText": "An optional list of additional parameters to pass to the terraform init command.\n",
       "DefaultValue": "",
@@ -78,7 +78,7 @@
     },
     {
       "Id": "873d2db1-5654-42b5-bcba-8fcef6d51a24",
-      "Name": "terraform_plan_params",
+      "Name": "tfplan_plan_params",
       "Label": "Custom terraform plan parameters",
       "HelpText": "An optional list of additional parameters to pass to the terraform plan command.\n",
       "DefaultValue": "",
@@ -88,7 +88,7 @@
     },
     {
       "Id": "3f80f637-370d-49ff-994a-3db4842a0af4",
-      "Name": "ssh_private_key",
+      "Name": "tfplan_ssh_private_key",
       "Label": "Git SSH Key",
       "HelpText": "SSH Key used for cloning private Git hosted terraform modules",
       "DefaultValue": "",
@@ -98,7 +98,7 @@
     },
     {
       "Id": "6b7abf13-ffdc-4a35-8d50-7f4abd2d9d81",
-      "Name": "setup_script",
+      "Name": "tfplan_setup_script",
       "Label": "Setup script",
       "HelpText": "Script to be run before terraform to download any custom providers or do any other setup that is required before running `terraform init`. This script must be in the package and this path is relative to terraform folder provided above.",
       "DefaultValue": "",
